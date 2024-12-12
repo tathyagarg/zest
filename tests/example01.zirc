@@ -1,0 +1,7 @@
+const a = 1;
+scene SMain {
+  camera CMain {
+    position = (0., 1., 2.);
+    facing = (5., 4., 3.);
+  }
+}
