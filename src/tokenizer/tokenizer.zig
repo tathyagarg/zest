@@ -111,6 +111,8 @@ fn scan_token(tokens: *ArrayList(Token)) !void {
         else => {
             if (is_digit(c)) {
                 try number(tokens);
+            } else if (is_alpha(c)) {
+                try identifier(tokens);
             } else {
                 // TODO: Throws Error!
             }
@@ -216,4 +218,43 @@ fn parse_int(text: []const u8) i64 {
     }
 
     return val;
+}
+
+fn is_alpha(char: u8) bool {
+    //              a               z               A              Z               _
+    return (char >= 97 and char <= 122) or (char >= 65 and char <= 90) or char == 95;
+}
+
+fn is_alnum(char: u8) bool {
+    return is_alpha(char) or is_digit(char);
+}
+
+fn get_keyword(text: []const u8) TokenType {
+    if (std.mem.eql(u8, text, "const")) return TokenType.CONST;
+    if (std.mem.eql(u8, text, "var")) return TokenType.VAR;
+    if (std.mem.eql(u8, text, "and")) return TokenType.AND;
+    if (std.mem.eql(u8, text, "or")) return TokenType.OR;
+    if (std.mem.eql(u8, text, "not")) return TokenType.NOT;
+    if (std.mem.eql(u8, text, "if")) return TokenType.IF;
+    if (std.mem.eql(u8, text, "elif")) return TokenType.ELIF;
+    if (std.mem.eql(u8, text, "else")) return TokenType.ELSE;
+    if (std.mem.eql(u8, text, "while")) return TokenType.WHILE;
+    if (std.mem.eql(u8, text, "for")) return TokenType.FOR;
+    if (std.mem.eql(u8, text, "fn")) return TokenType.FN;
+    if (std.mem.eql(u8, text, "scene")) return TokenType.SCENE;
+    if (std.mem.eql(u8, text, "camera")) return TokenType.CAMERA;
+    if (std.mem.eql(u8, text, "object")) return TokenType.OBJECT;
+    if (std.mem.eql(u8, text, "light")) return TokenType.LIGHT;
+    if (std.mem.eql(u8, text, "false")) return TokenType.FALSE;
+    if (std.mem.eql(u8, text, "true")) return TokenType.TRUE;
+    return TokenType.IDENTIFIER;
+}
+
+fn identifier(tokens: *ArrayList(Token)) !void {
+    while (is_alnum(peek())) _ = advance();
+
+    const text = source[start..current];
+    const tt = get_keyword(text);
+
+    try add_token(tt, Literal{ .IDENTIFIER = source[start..current] }, tokens);
 }

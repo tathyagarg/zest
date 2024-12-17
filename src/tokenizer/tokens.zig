@@ -15,6 +15,8 @@ pub const TokenType = enum {
     CAMERA, // camera
     OBJECT, // object
     LIGHT, // light
+    FALSE, // false
+    TRUE, // true
 
     // Symbols
     PLUS, // +
@@ -49,6 +51,8 @@ pub const TokenType = enum {
     IDENTIFIER,
     STRING,
     NUMBER,
+    UNDEF,
+    NULL,
 
     // Alternatives
     AMP_AND, // &&

@@ -1,5 +1,6 @@
 const std = @import("std");
 const tokenizer = @import("tokenizer/tokenizer.zig");
+const parser = @import("parser/parser.zig");
 
 const allocator = std.heap.page_allocator;
 
@@ -31,8 +32,17 @@ pub fn main() !void {
     var toks = std.ArrayList(tokenizer.Token).init(allocator);
     defer toks.deinit();
 
+    var stmts = std.ArrayList(parser.Statement).init(allocator);
+    defer stmts.deinit();
+
     try tokenizer.scan_tokens(buffer, &toks);
-    for (toks.items) |tok| {
-        std.debug.print("{any}\n", .{tok});
+    try parser.parse(&toks, &stmts);
+
+    for (stmts.items) |stmt| {
+        std.debug.print("{any}\n{any}\n{any}\n", .{
+            stmt,
+            stmt.const_assign.name.literal,
+            stmt.const_assign.initializer,
+        });
     }
 }
