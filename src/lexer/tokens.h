@@ -1,0 +1,9 @@
+#define EOI 0
+#define SEMICOLON 1
+#define PLUS 2
+#define MINUS 3
+#define TIMES 4
+#define DIVIDE 5
+#define LPAREN 6
+#define RPAREN 7
+#define NUM 8
