@@ -1,7 +1,6 @@
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum TokenType {
-    Integer,
-    Float,
+    Literal,
     Plus,
     Minus,
     Star,
@@ -11,18 +10,21 @@ pub enum TokenType {
     Semicolon,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Token {
     pub token_type: TokenType,
-    pub value: String,
+    pub lexeme: String,
+    pub literal: Option<String>,
 }
 
 impl std::fmt::Display for Token {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
             f,
-            "Token{{ tt: {:?}, value: {} }}",
-            self.token_type, self.value
+            "Token{{ tt: {:?}, lexeme: {}, literal: {} }}",
+            self.token_type,
+            self.lexeme,
+            self.literal.as_ref().unwrap_or(&"".to_string())
         )
     }
 }

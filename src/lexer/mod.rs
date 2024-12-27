@@ -1,4 +1,4 @@
-mod token;
+pub mod token;
 
 use token::{Token, TokenType};
 
@@ -34,57 +34,70 @@ impl Lexer {
                 '+' => {
                     tokens.push(Token {
                         token_type: TokenType::Plus,
-                        value: "+".to_string(),
+                        lexeme: "+".to_string(),
+                        literal: None,
                     });
                     self.advance();
                 }
                 '-' => {
                     tokens.push(Token {
                         token_type: TokenType::Minus,
-                        value: "-".to_string(),
+                        lexeme: "-".to_string(),
+                        literal: None,
                     });
                     self.advance();
                 }
                 '*' => {
                     tokens.push(Token {
                         token_type: TokenType::Star,
-                        value: "*".to_string(),
+                        lexeme: "*".to_string(),
+                        literal: None,
                     });
                     self.advance();
                 }
                 '/' => {
                     tokens.push(Token {
                         token_type: TokenType::Slash,
-                        value: "/".to_string(),
+                        lexeme: "/".to_string(),
+                        literal: None,
                     });
                     self.advance();
                 }
                 '(' => {
                     tokens.push(Token {
                         token_type: TokenType::LParen,
-                        value: "(".to_string(),
+                        lexeme: "(".to_string(),
+                        literal: None,
                     });
                     self.advance();
                 }
                 ')' => {
                     tokens.push(Token {
                         token_type: TokenType::RParen,
-                        value: ")".to_string(),
+                        lexeme: ")".to_string(),
+                        literal: None,
                     });
                     self.advance();
                 }
                 ';' => {
                     tokens.push(Token {
                         token_type: TokenType::Semicolon,
-                        value: ";".to_string(),
+                        lexeme: ";".to_string(),
+                        literal: None,
                     });
                     self.advance();
                 }
                 '0'..='9' | '.' => {
                     tokens.push(self.make_number());
                 }
+                '\n' => {
+                    self.advance();
+                }
                 _ => {
-                    panic!("Invalid character: {}", self.current);
+                    panic!(
+                        "Invalid character: {} at {}",
+                        self.current as u32, self.position
+                    );
                 }
             }
         }
@@ -108,16 +121,11 @@ impl Lexer {
             self.advance();
         }
 
-        if is_float {
-            return Token {
-                token_type: TokenType::Float,
-                value,
-            };
-        }
-        Token {
-            token_type: TokenType::Integer,
-            value,
-        }
+        return Token {
+            token_type: TokenType::Literal,
+            lexeme: value.clone(),
+            literal: Some(value),
+        };
     }
 }
 
@@ -132,16 +140,19 @@ mod tests {
             lexer.lex(),
             vec![
                 Token {
-                    token_type: TokenType::Integer,
-                    value: "1".to_string(),
+                    token_type: TokenType::Literal,
+                    lexeme: "1".to_string(),
+                    literal: Some("1".to_string()),
                 },
                 Token {
                     token_type: TokenType::Plus,
-                    value: "+".to_string(),
+                    lexeme: "+".to_string(),
+                    literal: None,
                 },
                 Token {
-                    token_type: TokenType::Integer,
-                    value: "2".to_string(),
+                    token_type: TokenType::Literal,
+                    lexeme: "2".to_string(),
+                    literal: Some("2".to_string()),
                 },
             ]
         );
