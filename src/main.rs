@@ -1,8 +1,6 @@
 use std::env;
 
-mod ast;
 mod lexer;
-mod parser;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -14,5 +12,5 @@ fn main() {
     let file_name = &args[1];
     let contents = std::fs::read_to_string(file_name).expect("Failed to read file");
 
-    parser::parse(&contents);
+    println!("{:?}", lexer::Lexer::new(contents).lex());
 }
