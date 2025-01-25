@@ -1,5 +1,5 @@
 (*
-  The contents of this file define the grammar of the Zircon programming language,
+  The contents of this file define the grammar of the Zest programming language,
   in the Extended Backus-Naur Form* defined in ISO/IEC 14977:1996, accessible through:
     https://www.cl.cam.ac.uk/~mgk25/iso-14977.pdf
 
