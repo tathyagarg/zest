@@ -161,7 +161,9 @@ impl Constructor {
     pub fn expression(&mut self) -> Expression {
         let front = self.pop_front();
         match front {
-            tokeniser::Token::Number(_) | tokeniser::Token::Identifier(_) => Expression {
+            tokeniser::Token::Number(_)
+            | tokeniser::Token::Identifier(_)
+            | tokeniser::Token::String(_) => Expression {
                 tokens: vec![front],
             },
             tokeniser::Token::LParen => {

@@ -9,6 +9,7 @@ pub enum Token {
     Comma,
     Equal,
     Number(String),
+    String(String),
     EoF,
     Unknown,
     Ignore,
@@ -63,9 +64,25 @@ impl Tokeniser {
             self.number()
         } else if curr.is_ascii_alphabetic() {
             self.identifier()
+        } else if curr == '"' {
+            self.string()
         } else {
             Token::Unknown
         }
+    }
+
+    pub fn string(&mut self) -> Token {
+        let mut string = String::new();
+        self.skip += 1;
+        let mut curr = self.text.chars().nth(self.current + self.skip).unwrap();
+        while curr != '"' {
+            string.push(curr);
+            self.skip += 1;
+            curr = self.text.chars().nth(self.current + self.skip).unwrap();
+        }
+        self.skip += 1;
+
+        Token::String(string)
     }
 
     pub fn skip_whitespace(&mut self) -> Token {

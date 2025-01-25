@@ -4,6 +4,7 @@ scene {
         .position = (1, 1, 1),
         .radius = 1,
         .physics = physics_1,
+        .material = mat_1,
     }
 
     camera {
@@ -14,6 +15,10 @@ scene {
 
     physics_1 {
         .gravity = true
+    }
+
+    mat_1 {
+        .color = "#d00d1e"
     }
 
     camera_controller {
