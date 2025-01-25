@@ -1,2 +1,18 @@
-1-2;
-1+2;
+scene {
+    object {
+        .type = SPHERE.
+        .position = (1, 1, 1),
+        .radius = 1,
+        .physics = {
+            gravity = true
+        }
+    },
+    camera {
+        .position = (0, 0, 0),
+        .direction = (0, 0, 0),
+        .controller = {
+            .mouse = true,
+            .keyboard = true,
+        }
+    }
+}
