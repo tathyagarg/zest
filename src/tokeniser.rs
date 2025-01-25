@@ -1,4 +1,4 @@
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum Token {
     Identifier(String),
     RBrace,
@@ -107,7 +107,7 @@ impl Tokeniser {
     pub fn identifier(&mut self) -> Token {
         let mut identifier = String::new();
         let mut curr = self.text.chars().nth(self.current).unwrap();
-        while curr.is_ascii_alphabetic() {
+        while curr.is_ascii_alphabetic() || curr.is_ascii_digit() || curr == '_' {
             identifier.push(curr);
             self.skip += 1;
             curr = self.text.chars().nth(self.current + self.skip).unwrap();

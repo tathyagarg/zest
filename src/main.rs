@@ -1,4 +1,7 @@
+mod constructor;
 mod tokeniser;
+
+use std::collections::VecDeque;
 
 pub fn main() {
     let file = std::env::args().nth(1).expect("No file provided");
@@ -7,14 +10,15 @@ pub fn main() {
     let mut tokeniser = tokeniser::Tokeniser::new(content);
     let mut token = tokeniser.tokenise();
 
-    let mut tokens = Vec::<tokeniser::Token>::new();
+    let mut tokens = VecDeque::new();
 
     loop {
         match token {
             tokeniser::Token::EoF | tokeniser::Token::Unknown => break,
-            _ => tokens.push(token.clone()),
+            _ => tokens.push_back(token.clone()),
         }
         token = tokeniser.tokenise();
     }
-    println!("{:?}", tokens);
+    let mut constructor = constructor::Constructor::new(tokens);
+    constructor.construct();
 }
