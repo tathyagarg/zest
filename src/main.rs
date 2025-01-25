@@ -10,11 +10,11 @@ pub fn main() {
     let mut tokens = Vec::<tokeniser::Token>::new();
 
     loop {
-        token = tokeniser.tokenise();
         match token {
             tokeniser::Token::EoF | tokeniser::Token::Unknown => break,
             _ => tokens.push(token.clone()),
         }
+        token = tokeniser.tokenise();
     }
     println!("{:?}", tokens);
 }
