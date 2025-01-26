@@ -2,7 +2,7 @@ mod constructor;
 mod tokeniser;
 mod transpiler;
 
-use std::collections::VecDeque;
+use std::{collections::VecDeque, io::Write};
 
 const USAGE: &str = "\nUsage: zest <input file> [output file]\n";
 
@@ -26,7 +26,11 @@ pub fn main() {
     }
     let mut constructor = constructor::Constructor::new(tokens);
     constructor.construct();
+    //constructor.print();
 
     let transpiler = transpiler::Transpiler::new(constructor.engine);
-    println!("{}", transpiler.transpile());
+
+    let mut f = std::fs::File::create(out_file).expect("Could not create file");
+    f.write_all(transpiler.transpile().as_bytes())
+        .expect("Could not write to file");
 }

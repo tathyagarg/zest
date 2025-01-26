@@ -1,28 +1,36 @@
 SCENE scene {
-    MATERIAL mat_1 {
-        .color = "#d00d1e"
+    LIGHT light {
+        .position = (0, 0, 0),
+        .intensity = (0.9, 0.9, 0.9)
     }
 
-    CONTROLLER camera_controller {
-        .mouse = true,
-        .keyboard = true,
+    IMAGE image {
+        .file = "tests/assets/textures/texture01.png",
     }
 
-    OBJECT object {
-        .type = SPHERE,
-        .position = (1, 1, 1),
-        .radius = 1,
-        .material = mat_1,
+    MATERIAL mat {
+        .image = image, 
     }
 
-    CAMERA camera {
+    RECTANGLE rect {
+        .v0 = (-6, -6, -6),
+        .v1 = (6, -6, 6),
+        .material = mat,
+        .inverted = false,
+    }
+
+    CONTROLLER controller {
+        .mouse_movement = true,
+        .keyboard_movement = true,
+    }
+
+    CAMERA cam {
         .position = (0, 0, 0),
         .direction = (0, 0, 0),
-        .controller = camera_controller,
+        .event_handler = controller,
     }
 
-    PHYSICS physics_1 {
-        .gravity = true,
-        .on = object
+    ACTIVE active {
+        .camera = cam
     }
 }

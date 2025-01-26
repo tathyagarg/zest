@@ -8,8 +8,14 @@ const LIGHT: &str = "LIGHT";
 const PHYSICS: &str = "PHYSICS";
 const MATERIAL: &str = "MATERIAL";
 const CONTROLLER: &str = "CONTROLLER";
+const SPHERE: &str = "SPHERE";
+const RECTANGLE: &str = "RECTANGLE";
+const IMAGE: &str = "IMAGE";
+const ACTIVE: &str = "ACTIVE";
 
-const OBJECT_TYPES: [&str; 6] = [OBJECT, CAMERA, LIGHT, PHYSICS, MATERIAL, CONTROLLER];
+const OBJECT_TYPES: [&str; 10] = [
+    OBJECT, CAMERA, LIGHT, PHYSICS, MATERIAL, CONTROLLER, SPHERE, RECTANGLE, IMAGE, ACTIVE,
+];
 
 pub struct Constructor {
     pub tokens: VecDeque<tokeniser::Token>,
@@ -37,12 +43,31 @@ pub struct Object {
 
 #[derive(Debug)]
 pub enum ObjectType {
-    Object,
     Camera,
     Light,
     Physics,
     Material,
     Controller,
+    Sphere,
+    Rectangle,
+    Image,
+    Active,
+}
+
+impl std::fmt::Display for ObjectType {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match self {
+            ObjectType::Camera => write!(f, "engine.Camera"),
+            ObjectType::Light => write!(f, "graphics.Light"),
+            ObjectType::Physics => write!(f, "physics.PhysicsEngine"),
+            ObjectType::Material => write!(f, "graphics.material.Material"),
+            ObjectType::Controller => write!(f, "event_handler.EventHandler"),
+            ObjectType::Sphere => write!(f, "objects.Sphere"),
+            ObjectType::Rectangle => write!(f, "objects.Rectangle"),
+            ObjectType::Image => write!(f, "images.Image"),
+            ObjectType::Active => write!(f, "Active"),
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -51,13 +76,32 @@ pub struct Property {
     pub value: Expression,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Expression {
     Number(String),
     Identifier(String),
     String(String),
     Group(Vec<Expression>),
     Empty,
+}
+
+// display for expression
+impl std::fmt::Display for Expression {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match self {
+            Expression::Number(num) => write!(f, "{}", num),
+            Expression::Identifier(idtfr) => write!(f, "{}", idtfr),
+            Expression::String(str) => write!(f, "{}", str),
+            Expression::Group(exprs) => {
+                write!(f, "(")?;
+                for expr in exprs {
+                    write!(f, "{}, ", expr)?;
+                }
+                write!(f, ")")
+            }
+            Expression::Empty => write!(f, ""),
+        }
+    }
 }
 
 #[derive(Copy, Eq, PartialEq, Clone)]
@@ -151,13 +195,16 @@ impl Constructor {
             self.engine.scene.objects.push(Object {
                 name,
                 obj_type: match obj_string.as_str() {
-                    OBJECT => ObjectType::Object,
                     CAMERA => ObjectType::Camera,
                     LIGHT => ObjectType::Light,
                     PHYSICS => ObjectType::Physics,
                     MATERIAL => ObjectType::Material,
                     CONTROLLER => ObjectType::Controller,
-                    _ => ObjectType::Object,
+                    SPHERE => ObjectType::Sphere,
+                    RECTANGLE => ObjectType::Rectangle,
+                    IMAGE => ObjectType::Image,
+                    ACTIVE => ObjectType::Active,
+                    _ => panic!("Unexpected object type: {}", obj_string),
                 },
                 properties: Vec::new(),
             });
