@@ -1,28 +1,28 @@
-scene {
-    object {
+SCENE scene {
+    MATERIAL mat_1 {
+        .color = "#d00d1e"
+    }
+
+    CONTROLLER camera_controller {
+        .mouse = true,
+        .keyboard = true,
+    }
+
+    OBJECT object {
         .type = SPHERE,
         .position = (1, 1, 1),
         .radius = 1,
-        .physics = physics_1,
         .material = mat_1,
     }
 
-    camera {
+    CAMERA camera {
         .position = (0, 0, 0),
         .direction = (0, 0, 0),
         .controller = camera_controller,
     }
 
-    physics_1 {
-        .gravity = true
-    }
-
-    mat_1 {
-        .color = "#d00d1e"
-    }
-
-    camera_controller {
-        .mouse = true,
-        .keyboard = true,
+    PHYSICS physics_1 {
+        .gravity = true,
+        .on = object
     }
 }

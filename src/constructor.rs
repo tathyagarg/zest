@@ -1,11 +1,19 @@
 use crate::tokeniser;
 use std::collections::VecDeque;
 
-const KEYWORDS: [&str; 3] = ["scene", "object", "camera"];
+const SCENE: &str = "SCENE";
+const OBJECT: &str = "OBJECT";
+const CAMERA: &str = "CAMERA";
+const LIGHT: &str = "LIGHT";
+const PHYSICS: &str = "PHYSICS";
+const MATERIAL: &str = "MATERIAL";
+const CONTROLLER: &str = "CONTROLLER";
+
+const OBJECT_TYPES: [&str; 6] = [OBJECT, CAMERA, LIGHT, PHYSICS, MATERIAL, CONTROLLER];
 
 pub struct Constructor {
     pub tokens: VecDeque<tokeniser::Token>,
-    engine: Engine,
+    pub engine: Engine,
     step: Step,
 }
 
@@ -16,13 +24,25 @@ pub struct Engine {
 
 #[derive(Debug)]
 pub struct Scene {
+    pub name: String,
     pub objects: Vec<Object>,
 }
 
 #[derive(Debug)]
 pub struct Object {
     pub name: String,
+    pub obj_type: ObjectType,
     pub properties: Vec<Property>,
+}
+
+#[derive(Debug)]
+pub enum ObjectType {
+    Object,
+    Camera,
+    Light,
+    Physics,
+    Material,
+    Controller,
 }
 
 #[derive(Debug)]
@@ -32,8 +52,12 @@ pub struct Property {
 }
 
 #[derive(Debug)]
-pub struct Expression {
-    pub tokens: Vec<tokeniser::Token>,
+pub enum Expression {
+    Number(String),
+    Identifier(String),
+    String(String),
+    Group(Vec<Expression>),
+    Empty,
 }
 
 #[derive(Copy, Eq, PartialEq, Clone)]
@@ -53,6 +77,7 @@ impl Constructor {
             tokens,
             engine: Engine {
                 scene: Scene {
+                    name: "scene".to_string(),
                     objects: Vec::new(),
                 },
             },
@@ -97,7 +122,11 @@ impl Constructor {
     }
 
     pub fn start(&mut self) -> Step {
-        self.ensure(tokeniser::Token::Identifier("scene".to_string()));
+        self.ensure(tokeniser::Token::Identifier(SCENE.to_string()));
+        if let tokeniser::Token::Identifier(name) = self.pop_front() {
+            self.engine.scene.name = name;
+        }
+
         Step::Scene
     }
 
@@ -107,10 +136,29 @@ impl Constructor {
     }
 
     pub fn object(&mut self) -> Step {
-        let name = self.pop_front();
-        if let tokeniser::Token::Identifier(name) = name {
+        let obj_type = self.pop_front();
+        let obj_string = match obj_type {
+            tokeniser::Token::Identifier(obj_string) => {
+                if !OBJECT_TYPES.contains(&obj_string.as_str()) {
+                    panic!("Unexpected object type: {}", obj_string);
+                }
+                obj_string
+            }
+            _ => panic!("Unexpected token: {:?}", obj_type),
+        };
+
+        if let tokeniser::Token::Identifier(name) = self.pop_front() {
             self.engine.scene.objects.push(Object {
                 name,
+                obj_type: match obj_string.as_str() {
+                    OBJECT => ObjectType::Object,
+                    CAMERA => ObjectType::Camera,
+                    LIGHT => ObjectType::Light,
+                    PHYSICS => ObjectType::Physics,
+                    MATERIAL => ObjectType::Material,
+                    CONTROLLER => ObjectType::Controller,
+                    _ => ObjectType::Object,
+                },
                 properties: Vec::new(),
             });
         }
@@ -137,7 +185,7 @@ impl Constructor {
                 .properties
                 .push(Property {
                     name,
-                    value: Expression { tokens: Vec::new() },
+                    value: Expression::Empty,
                 });
         }
 
@@ -158,14 +206,21 @@ impl Constructor {
         Step::PropertyName
     }
 
+    pub fn make_expression(&mut self, token: &tokeniser::Token) -> Expression {
+        match token {
+            tokeniser::Token::Number(num) => Expression::Number(num.clone()),
+            tokeniser::Token::Identifier(idtfr) => Expression::Identifier(idtfr.clone()),
+            tokeniser::Token::String(str) => Expression::String(str.clone()),
+            _ => panic!("Unexpected token {:?}", token),
+        }
+    }
+
     pub fn expression(&mut self) -> Expression {
         let front = self.pop_front();
         match front {
-            tokeniser::Token::Number(_)
-            | tokeniser::Token::Identifier(_)
-            | tokeniser::Token::String(_) => Expression {
-                tokens: vec![front],
-            },
+            tokeniser::Token::Number(num) => Expression::Number(num),
+            tokeniser::Token::Identifier(idtfr) => Expression::Identifier(idtfr),
+            tokeniser::Token::String(str) => Expression::String(str),
             tokeniser::Token::LParen => {
                 let mut tokens = Vec::new();
                 loop {
@@ -178,7 +233,7 @@ impl Constructor {
                         self.ensure(tokeniser::Token::Comma);
                     }
                 }
-                Expression { tokens }
+                Expression::Group(tokens.iter().map(|t| self.make_expression(t)).collect())
             }
             _ => panic!("Unexpected token {:?}", front),
         }
@@ -190,5 +245,9 @@ impl Constructor {
             return Step::End;
         }
         Step::Object
+    }
+
+    pub fn print(&self) {
+        println!("{:#?}", self.engine);
     }
 }
