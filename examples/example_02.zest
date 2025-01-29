@@ -1,0 +1,31 @@
+SCENE scene {
+  LIGHT light {
+    .position = (0, 0, 0),
+    .intensity = (0.9, 0.9, 0.9),
+  }
+
+  MATERIAL mat {
+    .color = (255, 0, 0)
+  }
+
+  SPHERE sphere {
+    .position = (3, 0, 0),
+    .radius = 1,
+    .material = mat
+  }
+
+  CONTROLLER controller {
+    .mouse_movement = true,
+    .keyboard_movement = true,
+  }
+
+  CAMERA cam {
+    .position = (0, 0, 0),
+    .direction = (0, 0, 0),
+    .event_handler = controller,
+  }
+
+  ACTIVE active {
+    .camera = cam
+  }
+}

@@ -1,6 +1,6 @@
 use crate::constructor::{self, Expression};
 
-const BEGIN: &str = "const z3d = @import(\"z3d\");
+const BEGIN: &str = "const z3d = @import(\"root.zig\");
 const std = @import(\"std\");
 
 const Vec3 = z3d.math.Vec3(f32);
@@ -87,7 +87,6 @@ impl Transpiler {
             constructor::ObjectType::Light => self.transpile_light(object),
             constructor::ObjectType::Rectangle => self.transpile_rectangle(object),
             constructor::ObjectType::Active => self.transpile_active(object),
-            _ => String::new(),
         }
     }
 
@@ -95,7 +94,7 @@ impl Transpiler {
         let mut output = String::new();
         output.push_str(
             format!(
-                "    var {} = z3d.graphics.objects.Sphere.init(", 
+                "    const {} = z3d.graphics.objects.Sphere.init(", 
                 object.name
             )
             .as_str()
@@ -175,7 +174,7 @@ impl Transpiler {
 
                 output.push_str(
                     format!(
-                        " .SOLID_COLOR = RGB{{ .r = {}, .g = {}, .b = {} }}",
+                        " .SOLID_COLOR = z3d.graphics.RGB{{ .r = {}, .g = {}, .b = {} }}",
                         values.next().unwrap(),
                         values.next().unwrap(),
                         values.next().unwrap()

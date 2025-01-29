@@ -4,12 +4,8 @@ SCENE scene {
         .intensity = (0.9, 0.9, 0.9)
     }
 
-    IMAGE image {
-        .file = "tests/assets/textures/texture01.png",
-    }
-
     MATERIAL mat {
-        .image = image, 
+        .color = (0, 255, 255), 
     }
 
     RECTANGLE rect {

@@ -293,8 +293,4 @@ impl Constructor {
         }
         Step::Object
     }
-
-    pub fn print(&self) {
-        println!("{:#?}", self.engine);
-    }
 }
